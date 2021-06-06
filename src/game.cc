@@ -19,12 +19,12 @@ void Game::destroy_instance() {
 
 
 Game::Game() {
-    
+
     mWindow = nullptr;
 }
 
 Game::~Game() {
-    
+
     if (mWindow)
         delete mWindow;
 
@@ -39,14 +39,28 @@ int Game::run(int width, int height, bool fs)
     {
         return -1;
     }
-    
+
+    // setup clock for timing
+    float t=0.0f;
+    float dt = 1.f/60.f;
+    sf::Clock clock;
+
+    sf::Time currentTime = clock.restart();
+
     while (mRunning) {
+   
+        handle_input();  
+  
+        sf::Time newTime = clock.restart();
+        float frameTime = newTime.asSeconds() - currentTime.asSeconds();
+        currentTime = newTime;
 
-        // TODO: add timing code to loop
-
-        handle_input();
-
-        update(1.0f);
+        while (frameTime > 0.0f) {
+            float deltaTime = std::min(frameTime, dt);
+            update(deltaTime);
+            frameTime -= deltaTime;
+            t += deltaTime;
+        }
 
         render();
     }
@@ -68,7 +82,11 @@ void Game::render() {
     mWindow->display();
 }
 
-void Game::update(float dt) {}
+void Game::update(float dt) {
+
+    printf("\e[1A\e[K%f\n", dt);
+
+}
 
 void Game::handle_input() {
 
@@ -86,6 +104,8 @@ void Game::handle_input() {
 bool Game::init(int w, int h, bool fs) {
 
     mWindow = new sf::RenderWindow(sf::VideoMode(w, h), "JetPac");
+    mWindow->setVerticalSyncEnabled(true);
+    //mWindow->setFramerateLimit(60);
 
     mShape = sf::CircleShape(100.f);
     mShape.setFillColor(sf::Color::Green);

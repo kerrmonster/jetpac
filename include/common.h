@@ -3,5 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 #include <stdio.h>
+#include <algorithm>
+
+
+#define MINIMUM_FRAMES_PER_SECONDS  60
+
+
 
 #endif
