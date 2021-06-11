@@ -45,7 +45,7 @@ class Game
         int mHeight;
         bool mFullscreen;
         sf::RenderWindow* mWindow;
-        sf::CircleShape mShape;
+        sf::RectangleShape mPlayer;
         
 };
 

@@ -76,15 +76,13 @@ void Game::render() {
     mWindow->clear();
 
     // Draw stuff here
-    mWindow->draw(mShape);
+    mWindow->draw(mPlayer);
 
     // Flip buffers
     mWindow->display();
 }
 
 void Game::update(float dt) {
-
-    printf("\e[1A\e[K%.4f\n", dt);
 
 }
 
@@ -99,16 +97,37 @@ void Game::handle_input() {
             mRunning = false;
         }
     }
+
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+        mPlayer.move(sf::Vector2f(0,-5));
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+        mPlayer.move(sf::Vector2f(0,5));
+    }
+
+    sf::Vector2f pos = mPlayer.getPosition();
+
+    if (pos.y < 0) {
+        mPlayer.setPosition(sf::Vector2f(25, 0));
+    }
+
+    float maxY = (mWindow->getSize().y - mPlayer.getSize().y);
+
+    if (pos.y > maxY) {
+        mPlayer.setPosition(sf::Vector2f(25, maxY));
+    }    
 }
 
 bool Game::init(int w, int h, bool fs) {
 
-    mWindow = new sf::RenderWindow(sf::VideoMode(w, h), "JetPac");
+    mWindow = new sf::RenderWindow(sf::VideoMode(w, h), "GK Engine");
     mWindow->setVerticalSyncEnabled(true);
-    //mWindow->setFramerateLimit(60);
 
-    mShape = sf::CircleShape(100.f);
-    mShape.setFillColor(sf::Color::Green);
+    mPlayer = sf::RectangleShape(sf::Vector2f(10,50));
+    mPlayer.setFillColor(sf::Color::Green);
+    mPlayer.setPosition(sf::Vector2f(25.f, (float)(mWindow->getSize().y-mPlayer.getSize().y)/2));
 
     mRunning = true;
     return true;
