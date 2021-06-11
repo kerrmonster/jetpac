@@ -84,7 +84,7 @@ void Game::render() {
 
 void Game::update(float dt) {
 
-    printf("\e[1A\e[K%f\n", dt);
+    printf("\e[1A\e[K%.4f\n", dt);
 
 }
 
