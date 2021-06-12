@@ -2,6 +2,9 @@
 
 Game* Game::spInstance = nullptr;
 
+float ballX = 8.f;
+float ballY = 8.f;
+
 Game* Game::get_instance() {
     if (spInstance == nullptr)
         spInstance = new Game();
@@ -51,16 +54,16 @@ int Game::run(int width, int height, bool fs)
    
         handle_input();  
   
-        sf::Time newTime = clock.restart();
-        float frameTime = newTime.asSeconds() - currentTime.asSeconds();
-        currentTime = newTime;
+        //sf::Time newTime = clock.restart();
+        //float frameTime = newTime.asSeconds() - currentTime.asSeconds();
+        //currentTime = newTime;
 
-        while (frameTime > 0.0f) {
-            float deltaTime = std::min(frameTime, dt);
-            update(deltaTime);
-            frameTime -= deltaTime;
-            t += deltaTime;
-        }
+        //while (frameTime > 0.0f) {
+           // float deltaTime = std::min(frameTime, dt);
+        update(0.016);
+           // frameTime -= deltaTime;
+           // t += deltaTime;
+        //}
 
         render();
     }
@@ -78,12 +81,50 @@ void Game::render() {
     // Draw stuff here
     mWindow->draw(mPlayer);
 
+    mWindow->draw(mBall);
+
     // Flip buffers
     mWindow->display();
 }
 
 void Game::update(float dt) {
 
+    // ball physics
+    
+    mBall.move(ballX, ballY);
+    sf::Vector2f ballPos = mBall.getPosition();
+
+    if (ballPos.x < 0) {
+        ballPos.x = 0;
+        ballX = -ballX;    
+    }
+
+    if (ballPos.x > mWindow->getSize().x) {
+        ballPos.x = mWindow->getSize().x - mBall.getSize().x;
+        ballX = -ballX;    
+    }
+
+    if (ballPos.y < 0) {
+        ballPos.y = 0;
+        ballY = -ballY;    
+    }
+
+    if (ballPos.y > mWindow->getSize().y) {
+        ballPos.y = mWindow->getSize().y - mBall.getSize().y;
+        ballY = -ballY;    
+    }
+
+    mBall.setPosition(ballPos);
+    
+    // collision detection
+    if (ballPos.x < mPlayer.getPosition().x + mPlayer.getSize().x &&
+        ballPos.x + mBall.getSize().x > mPlayer.getPosition().x &&
+        ballPos.y < mPlayer.getPosition().y + mPlayer.getSize().y &&
+        ballPos.y + mBall.getSize().y > mPlayer.getPosition().y) 
+    {
+            // collision
+        ballX = -ballX;
+    }
 }
 
 void Game::handle_input() {
@@ -125,9 +166,15 @@ bool Game::init(int w, int h, bool fs) {
     mWindow = new sf::RenderWindow(sf::VideoMode(w, h), "GK Engine");
     mWindow->setVerticalSyncEnabled(true);
 
+    // Player init
     mPlayer = sf::RectangleShape(sf::Vector2f(10,50));
     mPlayer.setFillColor(sf::Color::Green);
     mPlayer.setPosition(sf::Vector2f(25.f, (float)(mWindow->getSize().y-mPlayer.getSize().y)/2));
+
+    // Ball init
+    mBall = sf::RectangleShape(sf::Vector2f(10.f, 10.f));
+    mBall.setFillColor(sf::Color::Yellow);
+    mBall.setPosition(sf::Vector2f((float)mWindow->getSize().x/2, (float)mWindow->getSize().y/2));
 
     mRunning = true;
     return true;

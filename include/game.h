@@ -45,8 +45,10 @@ class Game
         int mHeight;
         bool mFullscreen;
         sf::RenderWindow* mWindow;
+
+        // Game objects
         sf::RectangleShape mPlayer;
-        
+        sf::RectangleShape mBall;
 };
 
 #endif
